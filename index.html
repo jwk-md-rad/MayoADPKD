@@ -87,11 +87,11 @@
 
     .measurement-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
       margin-top: 1rem;
     }
-    @media (max-width: 600px) { .measurement-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) { .measurement-grid { grid-template-columns: 1fr; } }
 
     .measure-panel {
       border: 1px solid #e2e8f0;
@@ -304,28 +304,36 @@
       <ol class="steps">
         <li>
           <span>
-            <strong>Coronal plane</strong> — on the coronal slice showing the maximum kidney cross-section,
-            take <strong>2 measurements</strong>:
+            <strong>Sagittal plane (A)</strong> — on the parasagittal slice showing the maximum longitudinal
+            kidney diameter, measure:
             <ul style="margin-top:0.4rem;padding-left:1.2rem;">
-              <li><strong>Lc</strong> — cranio-caudal length: longest pole-to-pole distance (vertical)</li>
-              <li><strong>W</strong> — transverse width: widest lateral dimension perpendicular to Lc (horizontal)</li>
+              <li><strong>Ls</strong> — cranio-caudal length: longest pole-to-pole distance</li>
             </ul>
           </span>
         </li>
         <li>
           <span>
-            <strong>Sagittal plane</strong> — on the parasagittal slice showing the maximum kidney cross-section,
-            take <strong>2 measurements</strong>:
+            <strong>Coronal plane (B)</strong> — on the coronal slice showing the maximum longitudinal
+            kidney diameter, measure:
             <ul style="margin-top:0.4rem;padding-left:1.2rem;">
-              <li><strong>Ls</strong> — cranio-caudal length: pole-to-pole on the sagittal view (vertical)</li>
-              <li><strong>D</strong> — antero-posterior depth: widest AP dimension (horizontal)</li>
+              <li><strong>Lc</strong> — cranio-caudal length: longest pole-to-pole distance</li>
+            </ul>
+          </span>
+        </li>
+        <li>
+          <span>
+            <strong>Axial / Transverse plane (C)</strong> — on the axial slice at the maximum transverse
+            diameter (perpendicular to the longitudinal axis), measure <strong>2 dimensions</strong>:
+            <ul style="margin-top:0.4rem;padding-left:1.2rem;">
+              <li><strong>W</strong> — widest lateral (transverse) diameter</li>
+              <li><strong>D</strong> — antero-posterior depth, perpendicular to W</li>
             </ul>
           </span>
         </li>
         <li>
           <span>
             <strong>Total: 4 measurements per kidney.</strong>
-            The ellipsoid formula averages the two length measurements:
+            The ellipsoid formula averages both length measurements:
             <br/>
             <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.8rem;display:inline-block;margin-top:0.3rem;">
               L = (Lc + Ls) / 2
@@ -344,88 +352,119 @@
         </li>
       </ol>
 
-      <!-- DIAGRAMS -->
-      <div class="diagram-wrap" style="margin-top:1.5rem;">
+      <!-- REFERENCE FIGURE -->
+      <div style="margin-top:1.5rem;">
+        <p style="font-size:0.8rem;font-weight:600;color:#334155;margin-bottom:0.6rem;">
+          Suppl. Figure S2 — Estimation of TKV using the ellipsoid equation
+          <span style="font-weight:400;color:#64748b;">(Irazabal et al. JASN 2015)</span>
+        </p>
 
-        <!-- Coronal diagram -->
-        <div class="diagram-item">
-          <svg viewBox="0 0 280 230" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <marker id="arrowLc" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-                <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
-              </marker>
-              <marker id="arrowLcS" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
-                <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
-              </marker>
-              <marker id="arrowW" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-                <path d="M0,0 L8,4 L0,8 Z" fill="#16a34a"/>
-              </marker>
-              <marker id="arrowWS" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
-                <path d="M0,0 L8,4 L0,8 Z" fill="#16a34a"/>
-              </marker>
-            </defs>
-            <rect width="280" height="230" fill="#e8f4fd" rx="8"/>
-            <text x="140" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e40af">CORONAL VIEW</text>
-            <!-- Kidney silhouette -->
-            <ellipse cx="130" cy="115" rx="55" ry="85" fill="#bfdbfe" stroke="#2563eb" stroke-width="2.5"/>
-            <!-- Pelvis notch -->
-            <path d="M95 105 Q130 98 165 105" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,3"/>
-            <!-- Collecting system -->
-            <ellipse cx="130" cy="115" rx="22" ry="35" fill="none" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="3,2"/>
-            <!-- Lc arrow (vertical) -->
-            <line x1="200" y1="30" x2="200" y2="200" stroke="#dc2626" stroke-width="2"
-                  marker-start="url(#arrowLcS)" marker-end="url(#arrowLc)"/>
-            <text x="210" y="112" font-size="12" font-weight="bold" fill="#dc2626">Lc</text>
-            <text x="208" y="124" font-size="9" fill="#dc2626">(length)</text>
-            <!-- W arrow (horizontal) -->
-            <line x1="75" y1="192" x2="185" y2="192" stroke="#16a34a" stroke-width="2"
-                  marker-start="url(#arrowWS)" marker-end="url(#arrowW)"/>
-            <text x="122" y="207" font-size="12" font-weight="bold" fill="#16a34a">W</text>
-            <text x="105" y="219" font-size="9" fill="#16a34a">(transverse)</text>
-          </svg>
-          <p>Coronal — measure <strong style="color:#dc2626">Lc (length)</strong> &amp; <strong style="color:#16a34a">W (width)</strong></p>
-        </div>
+        <!-- Three-panel diagram mirroring Figure S2 -->
+        <svg viewBox="0 0 780 260" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;max-width:780px;height:auto;display:block;border-radius:10px;border:1px solid #e2e8f0;">
+          <defs>
+            <!-- red arrows -->
+            <marker id="rArrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#ef4444"/>
+            </marker>
+            <marker id="rArrowR" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto-start-reverse">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#ef4444"/>
+            </marker>
+          </defs>
 
-        <!-- Sagittal diagram -->
-        <div class="diagram-item">
-          <svg viewBox="0 0 280 230" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <marker id="arrowLs" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-                <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
-              </marker>
-              <marker id="arrowLsS" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
-                <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
-              </marker>
-              <marker id="arrowD" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-                <path d="M0,0 L8,4 L0,8 Z" fill="#b45309"/>
-              </marker>
-              <marker id="arrowDS" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
-                <path d="M0,0 L8,4 L0,8 Z" fill="#b45309"/>
-              </marker>
-            </defs>
-            <rect width="280" height="230" fill="#fdf4ff" rx="8"/>
-            <text x="140" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#7e22ce">SAGITTAL VIEW</text>
-            <!-- Kidney silhouette -->
-            <ellipse cx="130" cy="113" rx="48" ry="82" fill="#e9d5ff" stroke="#7c3aed" stroke-width="2.5"/>
-            <!-- Hilum notch -->
-            <path d="M160 100 Q172 113 160 126" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
-            <!-- Collecting system -->
-            <ellipse cx="135" cy="113" rx="18" ry="32" fill="none" stroke="#c4b5fd" stroke-width="1.5" stroke-dasharray="3,2"/>
-            <!-- Ls arrow (vertical) -->
-            <line x1="200" y1="31" x2="200" y2="195" stroke="#dc2626" stroke-width="2"
-                  marker-start="url(#arrowLsS)" marker-end="url(#arrowLs)"/>
-            <text x="210" y="109" font-size="12" font-weight="bold" fill="#dc2626">Ls</text>
-            <text x="208" y="121" font-size="9" fill="#dc2626">(length)</text>
-            <!-- D arrow (horizontal, AP) -->
-            <line x1="82" y1="192" x2="178" y2="192" stroke="#b45309" stroke-width="2"
-                  marker-start="url(#arrowDS)" marker-end="url(#arrowD)"/>
-            <text x="122" y="207" font-size="12" font-weight="bold" fill="#b45309">D</text>
-            <text x="105" y="219" font-size="9" fill="#b45309">(depth / AP)</text>
-          </svg>
-          <p>Sagittal — measure <strong style="color:#dc2626">Ls (length)</strong> &amp; <strong style="color:#b45309">D (depth)</strong></p>
-        </div>
+          <!-- ── Background ── -->
+          <rect width="780" height="260" fill="#1a1a1a"/>
 
-      </div><!-- /diagram-wrap -->
+          <!-- Panel dividers -->
+          <line x1="255" y1="0" x2="255" y2="260" stroke="#555" stroke-width="1"/>
+          <line x1="510" y1="0" x2="510" y2="260" stroke="#555" stroke-width="1"/>
+
+          <!-- ══ PANEL A — SAGITTAL ══ -->
+          <!-- kidney body (portrait ellipse, slightly tilted) -->
+          <ellipse cx="127" cy="133" rx="62" ry="100" fill="#2a3a2a" stroke="#4a7a4a" stroke-width="1.5"
+                   transform="rotate(-8,127,133)"/>
+          <!-- cysts blobs -->
+          <circle cx="100" cy="85"  r="18" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="148" cy="75"  r="14" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="85"  cy="130" r="22" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="155" cy="125" r="16" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="110" cy="170" r="19" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="148" cy="168" r="14" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="127" cy="210" r="16" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <!-- Ls measurement line (diagonal, matching the paper's style) -->
+          <line x1="85" y1="55" x2="168" y2="225"
+                stroke="#ef4444" stroke-width="2.5"
+                marker-start="url(#rArrowR)" marker-end="url(#rArrow)"/>
+          <!-- Label -->
+          <text x="8" y="248" font-size="13" font-weight="bold" fill="white" font-family="sans-serif">A</text>
+          <text x="175" y="135" font-size="11" font-weight="bold" fill="#ef4444" font-family="sans-serif">Ls</text>
+
+          <!-- ══ PANEL B — CORONAL ══ -->
+          <!-- kidney body -->
+          <ellipse cx="382" cy="133" rx="58" ry="100" fill="#2a3a2a" stroke="#4a7a4a" stroke-width="1.5"
+                   transform="rotate(5,382,133)"/>
+          <!-- cysts -->
+          <circle cx="355" cy="80"  r="20" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="404" cy="72"  r="15" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="345" cy="128" r="18" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="408" cy="120" r="20" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="362" cy="172" r="17" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="402" cy="170" r="13" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="382" cy="210" r="15" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <!-- Lc measurement line (diagonal) -->
+          <line x1="342" y1="48" x2="418" y2="222"
+                stroke="#ef4444" stroke-width="2.5"
+                marker-start="url(#rArrowR)" marker-end="url(#rArrow)"/>
+          <text x="263" y="248" font-size="13" font-weight="bold" fill="white" font-family="sans-serif">B</text>
+          <text x="424" y="128" font-size="11" font-weight="bold" fill="#ef4444" font-family="sans-serif">Lc</text>
+
+          <!-- ══ PANEL C — AXIAL (two kidneys) ══ -->
+          <!-- Left kidney (axial cross-section) -->
+          <ellipse cx="600" cy="133" rx="80" ry="60" fill="#2a3a2a" stroke="#4a7a4a" stroke-width="1.5"
+                   transform="rotate(-15,600,133)"/>
+          <circle cx="570" cy="105" r="16" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="608" cy="98"  r="13" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="552" cy="138" r="18" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="595" cy="148" r="15" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="635" cy="128" r="14" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="620" cy="158" r="12" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <!-- Right kidney (axial) -->
+          <ellipse cx="720" cy="133" rx="48" ry="60" fill="#2a3a2a" stroke="#4a7a4a" stroke-width="1.5"
+                   transform="rotate(10,720,133)"/>
+          <circle cx="698" cy="105" r="15" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="735" cy="98"  r="12" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="690" cy="140" r="14" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="730" cy="148" r="13" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <circle cx="748" cy="125" r="11" fill="#1e3a1e" stroke="#4a7a4a" stroke-width="1"/>
+          <!-- W line on left kidney (lateral width) -->
+          <line x1="524" y1="145" x2="672" y2="118"
+                stroke="#ef4444" stroke-width="2.5"
+                marker-start="url(#rArrowR)" marker-end="url(#rArrow)"/>
+          <!-- D line on left kidney (AP depth, perpendicular) -->
+          <line x1="572" y1="80" x2="628" y2="192"
+                stroke="#ef4444" stroke-width="2.5"
+                marker-start="url(#rArrowR)" marker-end="url(#rArrow)"/>
+          <!-- W line on right kidney -->
+          <line x1="676" y1="148" x2="762" y2="115"
+                stroke="#ef4444" stroke-width="2.5"
+                marker-start="url(#rArrowR)" marker-end="url(#rArrow)"/>
+          <!-- D line on right kidney -->
+          <line x1="698" y1="83" x2="742" y2="188"
+                stroke="#ef4444" stroke-width="2.5"
+                marker-start="url(#rArrowR)" marker-end="url(#rArrow)"/>
+          <!-- Labels -->
+          <text x="518" y="248" font-size="13" font-weight="bold" fill="white" font-family="sans-serif">C</text>
+          <text x="530" y="155" font-size="11" font-weight="bold" fill="#ef4444" font-family="sans-serif">W</text>
+          <text x="634" y="200" font-size="11" font-weight="bold" fill="#ef4444" font-family="sans-serif">D</text>
+        </svg>
+
+        <p style="font-size:0.78rem;color:#64748b;margin-top:0.5rem;line-height:1.5;">
+          Length was obtained from longitudinal images at the maximum longitudinal diameter, in both
+          <strong>sagittal (A)</strong> and <strong>coronal (B)</strong> planes. Width and depth were
+          obtained from <strong>transverse images (C)</strong> at the maximum transverse diameter,
+          acquired in the plane perpendicular to the longitudinal plane.
+        </p>
+      </div>
 
       <!-- Mayo classification table -->
       <div class="mayo-table-wrap" style="margin-top:1.5rem;">
@@ -515,36 +554,41 @@
           <h3>Left Kidney</h3>
           <div class="measurement-grid">
             <div class="measure-panel">
-              <div class="measure-panel-header">Coronal</div>
+              <div class="measure-panel-header">Sagittal (A)</div>
               <div class="measure-panel-body">
                 <div class="field-group">
-                  <label>Length (L)</label>
+                  <label>Length Ls</label>
                   <div class="field-row">
-                    <input type="number" id="lL" placeholder="e.g. 14.2" min="1" max="35" step="0.1"/>
-                    <span class="unit">cm</span>
-                  </div>
-                </div>
-                <div class="field-group">
-                  <label>Width / Transverse (W)</label>
-                  <div class="field-row">
-                    <input type="number" id="lW" placeholder="e.g. 9.0" min="1" max="25" step="0.1"/>
+                    <input type="number" id="lLs" placeholder="e.g. 13.8" min="1" max="35" step="0.1"/>
                     <span class="unit">cm</span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="measure-panel">
-              <div class="measure-panel-header">Sagittal</div>
+              <div class="measure-panel-header">Coronal (B)</div>
               <div class="measure-panel-body">
                 <div class="field-group">
-                  <label>Length (Ls)</label>
+                  <label>Length Lc</label>
                   <div class="field-row">
-                    <input type="number" id="lLs" placeholder="e.g. 13.8" min="1" max="35" step="0.1"/>
+                    <input type="number" id="lL" placeholder="e.g. 14.2" min="1" max="35" step="0.1"/>
+                    <span class="unit">cm</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="measure-panel">
+              <div class="measure-panel-header" style="background:#fef9c3;color:#92400e;">Axial (C)</div>
+              <div class="measure-panel-body">
+                <div class="field-group">
+                  <label>Width W</label>
+                  <div class="field-row">
+                    <input type="number" id="lW" placeholder="e.g. 9.0" min="1" max="25" step="0.1"/>
                     <span class="unit">cm</span>
                   </div>
                 </div>
                 <div class="field-group">
-                  <label>Depth / AP (D)</label>
+                  <label>Depth D</label>
                   <div class="field-row">
                     <input type="number" id="lD" placeholder="e.g. 8.5" min="1" max="25" step="0.1"/>
                     <span class="unit">cm</span>
@@ -560,36 +604,41 @@
           <h3>Right Kidney</h3>
           <div class="measurement-grid">
             <div class="measure-panel">
-              <div class="measure-panel-header">Coronal</div>
+              <div class="measure-panel-header">Sagittal (A)</div>
               <div class="measure-panel-body">
                 <div class="field-group">
-                  <label>Length (L)</label>
+                  <label>Length Ls</label>
                   <div class="field-row">
-                    <input type="number" id="rL" placeholder="e.g. 13.8" min="1" max="35" step="0.1"/>
-                    <span class="unit">cm</span>
-                  </div>
-                </div>
-                <div class="field-group">
-                  <label>Width / Transverse (W)</label>
-                  <div class="field-row">
-                    <input type="number" id="rW" placeholder="e.g. 8.7" min="1" max="25" step="0.1"/>
+                    <input type="number" id="rLs" placeholder="e.g. 13.4" min="1" max="35" step="0.1"/>
                     <span class="unit">cm</span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="measure-panel">
-              <div class="measure-panel-header">Sagittal</div>
+              <div class="measure-panel-header">Coronal (B)</div>
               <div class="measure-panel-body">
                 <div class="field-group">
-                  <label>Length (Ls)</label>
+                  <label>Length Lc</label>
                   <div class="field-row">
-                    <input type="number" id="rLs" placeholder="e.g. 13.4" min="1" max="35" step="0.1"/>
+                    <input type="number" id="rL" placeholder="e.g. 13.8" min="1" max="35" step="0.1"/>
+                    <span class="unit">cm</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="measure-panel">
+              <div class="measure-panel-header" style="background:#fef9c3;color:#92400e;">Axial (C)</div>
+              <div class="measure-panel-body">
+                <div class="field-group">
+                  <label>Width W</label>
+                  <div class="field-row">
+                    <input type="number" id="rW" placeholder="e.g. 8.7" min="1" max="25" step="0.1"/>
                     <span class="unit">cm</span>
                   </div>
                 </div>
                 <div class="field-group">
-                  <label>Depth / AP (D)</label>
+                  <label>Depth D</label>
                   <div class="field-row">
                     <input type="number" id="rD" placeholder="e.g. 8.0" min="1" max="25" step="0.1"/>
                     <span class="unit">cm</span>
@@ -653,14 +702,16 @@
         <code>Vol (mL) = (π/6) × L × W × D</code> &nbsp;·&nbsp;
         <code>TKV = Left Vol + Right Vol</code> &nbsp;·&nbsp;
         <code>htTKV = TKV / height(m)</code><br/>
-        Lc = coronal length, Ls = sagittal length, W = transverse width (coronal), D = AP depth (sagittal).
+        Lc = coronal length (B), Ls = sagittal length (A), W = transverse width (C), D = AP depth (C).
         All dimensions in <em>cm</em>; height converted to metres for htTKV.
       </div>
     </div>
   </div>
 
   <footer style="text-align:center;font-size:0.75rem;color:#94a3b8;padding:1rem 0 2rem;">
-    Based on: Irazabal MV et al. <em>J Am Soc Nephrol.</em> 2015;26(8):2056-2065. &nbsp;|&nbsp;
+    Based on: Irazabal MV et al. <em>J Am Soc Nephrol.</em> 2015;26(1):160–172. PMID 24904092
+    (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4279733/" target="_blank" rel="noopener"
+        style="color:#94a3b8;">PMC4279733</a>) &nbsp;|&nbsp;
     For clinical decision support only — not a substitute for clinical judgement.
   </footer>
 
