@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADPKD Mayo Volume Calculator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f4f8;
+      color: #1a2332;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a4b8c 0%, #2563eb 100%);
+      color: white;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.3px; }
+    header p { font-size: 0.9rem; opacity: 0.85; margin-top: 0.3rem; }
+
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .card-header {
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .card-header h2 { font-size: 1rem; font-weight: 600; color: #334155; }
+    .card-icon { font-size: 1.1rem; }
+    .card-body { padding: 1.5rem; }
+
+    /* ── Instructions ── */
+    .instructions-toggle {
+      background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.875rem; color: #2563eb; font-weight: 500;
+      margin-left: auto;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .instructions-toggle:hover { background: #eff6ff; }
+    .instructions-content { display: none; }
+    .instructions-content.open { display: block; }
+
+    .steps { list-style: none; counter-reset: step; }
+    .steps li {
+      counter-increment: step;
+      display: flex; gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+    .steps li:last-child { border-bottom: none; }
+    .steps li::before {
+      content: counter(step);
+      min-width: 1.75rem; height: 1.75rem;
+      background: #2563eb; color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .measurement-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 600px) { .measurement-grid { grid-template-columns: 1fr; } }
+
+    .measure-panel {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .measure-panel-header {
+      background: #eff6ff;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #1e40af;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .measure-panel-body { padding: 0.75rem; }
+
+    /* ── Diagram SVG ── */
+    .diagram-wrap {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      margin-top: 0.5rem;
+    }
+    .diagram-item { flex: 1; min-width: 200px; }
+    .diagram-item p { font-size: 0.78rem; color: #64748b; margin-top: 0.4rem; text-align: center; }
+    .diagram-item svg { width: 100%; height: auto; display: block; border-radius: 8px; }
+
+    /* ── Form ── */
+    .kidney-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 640px) { .kidney-grid { grid-template-columns: 1fr; } }
+
+    .kidney-section h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid;
+    }
+    .kidney-section.left h3 { color: #2563eb; border-color: #2563eb; }
+    .kidney-section.right h3 { color: #7c3aed; border-color: #7c3aed; }
+
+    .field-group { margin-bottom: 0.9rem; }
+    .field-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #475569;
+      margin-bottom: 0.3rem;
+    }
+    .field-row { display: flex; align-items: center; gap: 0.5rem; }
+    .field-row input {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+      width: 100%;
+    }
+    .field-row input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .field-row input.invalid { border-color: #ef4444; }
+    .unit { font-size: 0.78rem; color: #94a3b8; white-space: nowrap; }
+
+    .separator { border: none; border-top: 1px solid #e2e8f0; margin: 1rem 0; }
+
+    .patient-row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .patient-row .field-group { flex: 1; min-width: 140px; }
+
+    /* ── Actions ── */
+    .actions {
+      display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: #2563eb; color: white;
+    }
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+    .btn-secondary {
+      background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;
+    }
+    .btn-secondary:hover { background: #e2e8f0; }
+
+    /* ── Results ── */
+    #results { display: none; }
+    #results.visible { display: block; }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .result-box {
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .result-box .label { font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; }
+    .result-box .value { font-size: 1.8rem; font-weight: 800; margin: 0.2rem 0; line-height: 1; }
+    .result-box .sub { font-size: 0.75rem; opacity: 0.7; }
+
+    .box-blue { background: #eff6ff; color: #1e40af; }
+    .box-purple { background: #f5f3ff; color: #5b21b6; }
+    .box-teal { background: #f0fdfa; color: #134e4a; }
+    .box-mayo { background: #1a4b8c; color: white; }
+    .box-mayo .label, .box-mayo .sub { opacity: 0.8; }
+
+    .mayo-description {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    .mayo-description strong { font-weight: 700; }
+
+    /* Mayo class colours */
+    .mayo-1A { background: #f0fdf4; border-left: 4px solid #22c55e; color: #14532d; }
+    .mayo-1B { background: #f0fdf4; border-left: 4px solid #16a34a; color: #14532d; }
+    .mayo-1C { background: #fefce8; border-left: 4px solid #eab308; color: #713f12; }
+    .mayo-1D { background: #fff7ed; border-left: 4px solid #f97316; color: #7c2d12; }
+    .mayo-1E { background: #fef2f2; border-left: 4px solid #ef4444; color: #7f1d1d; }
+
+    .formula-note {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: #f8fafc;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #64748b;
+      line-height: 1.6;
+    }
+    .formula-note code {
+      background: #e2e8f0;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+
+    /* ── Mayo table ── */
+    .mayo-table-wrap { overflow-x: auto; margin-top: 1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.825rem; }
+    th { background: #1a4b8c; color: white; padding: 0.5rem 0.75rem; text-align: left; }
+    td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #e2e8f0; }
+    tr:nth-child(even) td { background: #f8fafc; }
+    .class-badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    /* ── Error ── */
+    .error-msg {
+      background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
+      border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.875rem;
+      margin-top: 1rem; display: none;
+    }
+    .error-msg.visible { display: block; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>ADPKD Mayo Imaging Classification Calculator</h1>
+  <p>Total Kidney Volume (TKV) · Height-adjusted TKV (htTKV) · Mayo Class</p>
+</header>
+
+<main>
+
+  <!-- INSTRUCTIONS CARD -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📋</span>
+      <h2>Measurement Instructions</h2>
+      <button class="instructions-toggle" id="toggleInstructions" onclick="toggleInstructions()">
+        Show instructions ▾
+      </button>
+    </div>
+    <div class="card-body instructions-content" id="instructionsContent">
+
+      <p style="font-size:0.875rem; color:#64748b; margin-bottom:1rem;">
+        Measurements are taken on MRI (preferred) or CT. Use the largest kidney dimension on each plane.
+        All measurements in <strong>centimetres (cm)</strong>.
+      </p>
+
+      <ol class="steps">
+        <li>
+          <span>
+            <strong>Coronal plane:</strong> Measure the <em>length (cranio-caudal)</em> — the longest
+            pole-to-pole distance — and the <em>width (transverse)</em> — the widest lateral dimension
+            perpendicular to length — of each kidney.
+          </span>
+        </li>
+        <li>
+          <span>
+            <strong>Sagittal plane:</strong> On the parasagittal slice showing the maximum kidney cross-section,
+            measure the <em>width (antero-posterior / depth)</em> — the deepest dimension from anterior to
+            posterior border. <em>Note: the length is shared with the coronal plane — do not re-measure.</em>
+          </span>
+        </li>
+        <li>
+          <span>
+            The ellipsoid formula uses three axes: <strong>L</strong> (length, coronal),
+            <strong>W</strong> (transverse width, coronal), <strong>D</strong> (depth / AP width, sagittal).
+            <br/><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.8rem;">
+            Volume (mL) = π/6 × L × W × D</code>
+          </span>
+        </li>
+        <li>
+          <span>
+            Enter the patient's <strong>height in cm</strong> to compute
+            <em>htTKV = TKV / height (mL/m)</em>, which determines the Mayo class.
+          </span>
+        </li>
+      </ol>
+
+      <!-- DIAGRAMS -->
+      <div class="diagram-wrap" style="margin-top:1.5rem;">
+
+        <!-- Coronal diagram -->
+        <div class="diagram-item">
+          <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
+            <rect width="280" height="220" fill="#e8f4fd" rx="8"/>
+            <text x="140" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e40af">CORONAL VIEW</text>
+            <!-- Kidney silhouette -->
+            <ellipse cx="140" cy="115" rx="55" ry="85" fill="#bfdbfe" stroke="#2563eb" stroke-width="2.5"/>
+            <!-- Pelvis notch -->
+            <path d="M105 105 Q140 98 175 105" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <!-- Collecting system -->
+            <ellipse cx="140" cy="115" rx="22" ry="35" fill="none" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+            <!-- Length arrow (vertical) -->
+            <defs>
+              <marker id="arrowL" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
+              </marker>
+              <marker id="arrowLS" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
+              </marker>
+              <marker id="arrowW" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#16a34a"/>
+              </marker>
+              <marker id="arrowWS" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#16a34a"/>
+              </marker>
+            </defs>
+            <line x1="210" y1="30" x2="210" y2="200" stroke="#dc2626" stroke-width="2"
+                  marker-start="url(#arrowLS)" marker-end="url(#arrowL)"/>
+            <text x="222" y="118" font-size="12" font-weight="bold" fill="#dc2626">L</text>
+            <text x="218" y="130" font-size="9" fill="#dc2626">(length)</text>
+
+            <!-- Width arrow (horizontal) -->
+            <line x1="85" y1="185" x2="195" y2="185" stroke="#16a34a" stroke-width="2"
+                  marker-start="url(#arrowWS)" marker-end="url(#arrowW)"/>
+            <text x="133" y="198" font-size="12" font-weight="bold" fill="#16a34a">W</text>
+            <text x="119" y="210" font-size="9" fill="#16a34a">(transverse)</text>
+
+            <!-- Labels -->
+            <text x="10" y="208" font-size="9" fill="#64748b">Coronal: L &amp; W measured</text>
+          </svg>
+          <p>Coronal — measure <strong style="color:#dc2626">Length</strong> &amp; <strong style="color:#16a34a">Width</strong></p>
+        </div>
+
+        <!-- Sagittal diagram -->
+        <div class="diagram-item">
+          <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
+            <rect width="280" height="220" fill="#fdf4ff" rx="8"/>
+            <text x="140" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#7e22ce">SAGITTAL VIEW</text>
+            <!-- Kidney silhouette (bean shape) -->
+            <ellipse cx="130" cy="113" rx="48" ry="82" fill="#e9d5ff" stroke="#7c3aed" stroke-width="2.5"/>
+            <!-- AP notch (hilum) -->
+            <path d="M160 100 Q172 113 160 126" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+            <!-- Collecting system -->
+            <ellipse cx="140" cy="113" rx="18" ry="32" fill="none" stroke="#c4b5fd" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+            <!-- Depth arrow (horizontal, AP) -->
+            <defs>
+              <marker id="arrowD" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#b45309"/>
+              </marker>
+              <marker id="arrowDS" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#b45309"/>
+              </marker>
+            </defs>
+            <line x1="82" y1="185" x2="178" y2="185" stroke="#b45309" stroke-width="2"
+                  marker-start="url(#arrowDS)" marker-end="url(#arrowD)"/>
+            <text x="122" y="198" font-size="12" font-weight="bold" fill="#b45309">D</text>
+            <text x="105" y="210" font-size="9" fill="#b45309">(depth / AP)</text>
+
+            <!-- Length reference arrow -->
+            <line x1="230" y1="31" x2="230" y2="195" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,3"
+                  marker-start="url(#arrowLS)" marker-end="url(#arrowL)"/>
+            <text x="240" y="118" font-size="11" font-weight="bold" fill="#dc2626" opacity="0.6">L</text>
+            <text x="238" y="129" font-size="8" fill="#dc2626" opacity="0.6">(ref)</text>
+
+            <text x="10" y="208" font-size="9" fill="#64748b">Sagittal: D measured (L shared)</text>
+          </svg>
+          <p>Sagittal — measure <strong style="color:#b45309">Depth (AP)</strong>; Length is shared</p>
+        </div>
+
+      </div><!-- /diagram-wrap -->
+
+      <!-- Mayo classification table -->
+      <div class="mayo-table-wrap" style="margin-top:1.5rem;">
+        <p style="font-size:0.8rem;font-weight:600;color:#334155;margin-bottom:0.5rem;">
+          Mayo Imaging Classification — htTKV thresholds by age group (mL/m)
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Class</th>
+              <th>Age 15–24</th>
+              <th>Age 25–34</th>
+              <th>Age 35–44</th>
+              <th>Age 45–54</th>
+              <th>Age 55–64</th>
+              <th>Annual Growth</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="class-badge" style="background:#dcfce7;color:#14532d">1A</span></td>
+              <td>&lt; 160</td><td>&lt; 160</td><td>&lt; 160</td><td>&lt; 160</td><td>&lt; 160</td>
+              <td>~1.5%</td>
+            </tr>
+            <tr>
+              <td><span class="class-badge" style="background:#bbf7d0;color:#14532d">1B</span></td>
+              <td>160–319</td><td>160–319</td><td>160–319</td><td>160–319</td><td>160–319</td>
+              <td>~3.0%</td>
+            </tr>
+            <tr>
+              <td><span class="class-badge" style="background:#fef9c3;color:#713f12">1C</span></td>
+              <td>320–599</td><td>320–599</td><td>320–499</td><td>320–499</td><td>320–499</td>
+              <td>~4.8%</td>
+            </tr>
+            <tr>
+              <td><span class="class-badge" style="background:#fed7aa;color:#7c2d12">1D</span></td>
+              <td>600–999</td><td>600–899</td><td>500–799</td><td>500–699</td><td>500–599</td>
+              <td>~6.3%</td>
+            </tr>
+            <tr>
+              <td><span class="class-badge" style="background:#fecaca;color:#7f1d1d">1E</span></td>
+              <td>≥ 1000</td><td>≥ 900</td><td>≥ 800</td><td>≥ 700</td><td>≥ 600</td>
+              <td>~9.0%</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.75rem;color:#94a3b8;margin-top:0.4rem;">
+          * Class 2 (non-typical): irregular/asymmetric growth pattern not fitting Class 1 criteria.
+          Annual growth rates are approximate median values from Irazabal et al. JASN 2015.
+        </p>
+      </div>
+
+    </div><!-- /card-body -->
+  </div><!-- /instructions card -->
+
+  <!-- INPUT CARD -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📐</span>
+      <h2>Enter Measurements</h2>
+    </div>
+    <div class="card-body">
+
+      <!-- Patient info -->
+      <div class="patient-row">
+        <div class="field-group">
+          <label for="height">Patient Height</label>
+          <div class="field-row">
+            <input type="number" id="height" placeholder="e.g. 170" min="100" max="230" step="0.1"/>
+            <span class="unit">cm</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="age">Age</label>
+          <div class="field-row">
+            <input type="number" id="age" placeholder="e.g. 40" min="15" max="80" step="1"/>
+            <span class="unit">years</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="separator"/>
+
+      <div class="kidney-grid">
+        <!-- LEFT KIDNEY -->
+        <div class="kidney-section left">
+          <h3>Left Kidney</h3>
+          <div class="measurement-grid">
+            <div class="measure-panel">
+              <div class="measure-panel-header">Coronal</div>
+              <div class="measure-panel-body">
+                <div class="field-group">
+                  <label>Length (L)</label>
+                  <div class="field-row">
+                    <input type="number" id="lL" placeholder="e.g. 14.2" min="1" max="35" step="0.1"/>
+                    <span class="unit">cm</span>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label>Width / Transverse (W)</label>
+                  <div class="field-row">
+                    <input type="number" id="lW" placeholder="e.g. 9.0" min="1" max="25" step="0.1"/>
+                    <span class="unit">cm</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="measure-panel">
+              <div class="measure-panel-header">Sagittal</div>
+              <div class="measure-panel-body">
+                <div class="field-group">
+                  <label>Depth / AP (D)</label>
+                  <div class="field-row">
+                    <input type="number" id="lD" placeholder="e.g. 8.5" min="1" max="25" step="0.1"/>
+                    <span class="unit">cm</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT KIDNEY -->
+        <div class="kidney-section right">
+          <h3>Right Kidney</h3>
+          <div class="measurement-grid">
+            <div class="measure-panel">
+              <div class="measure-panel-header">Coronal</div>
+              <div class="measure-panel-body">
+                <div class="field-group">
+                  <label>Length (L)</label>
+                  <div class="field-row">
+                    <input type="number" id="rL" placeholder="e.g. 13.8" min="1" max="35" step="0.1"/>
+                    <span class="unit">cm</span>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label>Width / Transverse (W)</label>
+                  <div class="field-row">
+                    <input type="number" id="rW" placeholder="e.g. 8.7" min="1" max="25" step="0.1"/>
+                    <span class="unit">cm</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="measure-panel">
+              <div class="measure-panel-header">Sagittal</div>
+              <div class="measure-panel-body">
+                <div class="field-group">
+                  <label>Depth / AP (D)</label>
+                  <div class="field-row">
+                    <input type="number" id="rD" placeholder="e.g. 8.0" min="1" max="25" step="0.1"/>
+                    <span class="unit">cm</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /kidney-grid -->
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+        <button class="btn btn-primary" onclick="calculate()">Calculate Volume &amp; Mayo Class</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS CARD -->
+  <div class="card" id="results">
+    <div class="card-header">
+      <span class="card-icon">📊</span>
+      <h2>Results</h2>
+    </div>
+    <div class="card-body">
+      <div class="results-grid">
+        <div class="result-box box-blue">
+          <div class="label">Left Kidney Vol.</div>
+          <div class="value" id="resLVol">—</div>
+          <div class="sub">mL</div>
+        </div>
+        <div class="result-box box-purple">
+          <div class="label">Right Kidney Vol.</div>
+          <div class="value" id="resRVol">—</div>
+          <div class="sub">mL</div>
+        </div>
+        <div class="result-box box-teal">
+          <div class="label">TKV</div>
+          <div class="value" id="resTKV">—</div>
+          <div class="sub">mL</div>
+        </div>
+        <div class="result-box box-teal">
+          <div class="label">htTKV</div>
+          <div class="value" id="resHtTKV">—</div>
+          <div class="sub">mL/m</div>
+        </div>
+        <div class="result-box box-mayo">
+          <div class="label">Mayo Class</div>
+          <div class="value" id="resMayo">—</div>
+          <div class="sub" id="resMayoSub">—</div>
+        </div>
+      </div>
+
+      <div class="mayo-description" id="mayoDesc"></div>
+
+      <div class="formula-note">
+        <strong>Formula:</strong>
+        <code>Vol (mL) = (π/6) × L × W × D</code> &nbsp;·&nbsp;
+        <code>TKV = Left Vol + Right Vol</code> &nbsp;·&nbsp;
+        <code>htTKV = TKV / height(m)</code><br/>
+        All input dimensions in <em>cm</em>; height in <em>cm</em> converted to metres for htTKV.
+      </div>
+    </div>
+  </div>
+
+  <footer style="text-align:center;font-size:0.75rem;color:#94a3b8;padding:1rem 0 2rem;">
+    Based on: Irazabal MV et al. <em>J Am Soc Nephrol.</em> 2015;26(8):2056-2065. &nbsp;|&nbsp;
+    For clinical decision support only — not a substitute for clinical judgement.
+  </footer>
+
+</main>
+
+<script>
+  // ── Toggles ──────────────────────────────────────────────────────────────
+  function toggleInstructions() {
+    const el = document.getElementById('instructionsContent');
+    const btn = document.getElementById('toggleInstructions');
+    const open = el.classList.toggle('open');
+    btn.textContent = open ? 'Hide instructions ▴' : 'Show instructions ▾';
+  }
+
+  // ── Mayo Classification ──────────────────────────────────────────────────
+  // Thresholds from Irazabal 2015 (htTKV mL/m by age group)
+  // Returns class string '1A'..'1E' or '2' (atypical)
+  const MAYO_THRESHOLDS = {
+    // [1A_max, 1B_max, 1C_max, 1D_max]  ≥1E otherwise
+    '15-24': [159, 319, 599, 999],
+    '25-34': [159, 319, 599, 899],
+    '35-44': [159, 319, 499, 799],
+    '45-54': [159, 319, 499, 699],
+    '55-64': [159, 319, 499, 599],
+    '65+':   [159, 319, 499, 599],
+  };
+
+  const MAYO_INFO = {
+    '1A': {
+      label: 'Class 1A — Very slow progression',
+      css: 'mayo-1A',
+      growth: '~1.5% / year',
+      desc: 'Very slow kidney growth. Low near-term risk of CKD progression. Standard monitoring recommended.',
+    },
+    '1B': {
+      label: 'Class 1B — Slow progression',
+      css: 'mayo-1B',
+      growth: '~3.0% / year',
+      desc: 'Slow kidney growth. Moderate risk of CKD progression. Annual monitoring recommended.',
+    },
+    '1C': {
+      label: 'Class 1C — Intermediate progression',
+      css: 'mayo-1C',
+      growth: '~4.8% / year',
+      desc: 'Intermediate growth rate. Eligible for disease-modifying therapy per current guidelines.',
+    },
+    '1D': {
+      label: 'Class 1D — Rapid progression',
+      css: 'mayo-1D',
+      growth: '~6.3% / year',
+      desc: 'Rapid kidney growth. Strong indication for disease-modifying therapy.',
+    },
+    '1E': {
+      label: 'Class 1E — Very rapid progression',
+      css: 'mayo-1E',
+      growth: '~9.0% / year',
+      desc: 'Very rapid growth. Highest risk of CKD progression. Disease-modifying therapy strongly indicated.',
+    },
+  };
+
+  function getAgeGroup(age) {
+    if (age < 25) return '15-24';
+    if (age < 35) return '25-34';
+    if (age < 45) return '35-44';
+    if (age < 55) return '45-54';
+    if (age < 65) return '55-64';
+    return '65+';
+  }
+
+  function getMayoClass(htTKV, age) {
+    const group = getAgeGroup(age);
+    const t = MAYO_THRESHOLDS[group];
+    if (htTKV <= t[0]) return '1A';
+    if (htTKV <= t[1]) return '1B';
+    if (htTKV <= t[2]) return '1C';
+    if (htTKV <= t[3]) return '1D';
+    return '1E';
+  }
+
+  // ── Calculation ──────────────────────────────────────────────────────────
+  function ellipsoidVol(L, W, D) {
+    return (Math.PI / 6) * L * W * D;
+  }
+
+  function getVal(id) {
+    const v = parseFloat(document.getElementById(id).value);
+    return isNaN(v) ? null : v;
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
+  function clearError() {
+    document.getElementById('errorMsg').classList.remove('visible');
+  }
+
+  function calculate() {
+    clearError();
+
+    const lL = getVal('lL'), lW = getVal('lW'), lD = getVal('lD');
+    const rL = getVal('rL'), rW = getVal('rW'), rD = getVal('rD');
+    const height = getVal('height');
+    const age = getVal('age');
+
+    const missing = [];
+    if (!lL) missing.push('Left Length');
+    if (!lW) missing.push('Left Width');
+    if (!lD) missing.push('Left Depth');
+    if (!rL) missing.push('Right Length');
+    if (!rW) missing.push('Right Width');
+    if (!rD) missing.push('Right Depth');
+    if (!height) missing.push('Patient Height');
+
+    if (missing.length) {
+      showError('Please fill in: ' + missing.join(', '));
+      return;
+    }
+
+    if (height < 100 || height > 230) { showError('Height must be between 100 and 230 cm.'); return; }
+    if (age !== null && (age < 15 || age > 100)) { showError('Age must be between 15 and 100.'); return; }
+
+    const volL = ellipsoidVol(lL, lW, lD);
+    const volR = ellipsoidVol(rL, rW, rD);
+    const tkv  = volL + volR;
+    const htM  = height / 100;
+    const htTKV = tkv / htM;
+
+    document.getElementById('resLVol').textContent  = volL.toFixed(0);
+    document.getElementById('resRVol').textContent  = volR.toFixed(0);
+    document.getElementById('resTKV').textContent   = tkv.toFixed(0);
+    document.getElementById('resHtTKV').textContent = htTKV.toFixed(1);
+
+    const resultsEl = document.getElementById('results');
+    resultsEl.classList.add('visible');
+
+    if (age !== null) {
+      const cls = getMayoClass(htTKV, age);
+      const info = MAYO_INFO[cls];
+      document.getElementById('resMayo').textContent   = cls;
+      document.getElementById('resMayoSub').textContent = info.growth;
+
+      const desc = document.getElementById('mayoDesc');
+      desc.className = 'mayo-description ' + info.css;
+      desc.innerHTML = `<strong>${info.label}</strong><br/>${info.desc}`;
+    } else {
+      document.getElementById('resMayo').textContent    = 'N/A';
+      document.getElementById('resMayoSub').textContent = 'Enter age for class';
+      const desc = document.getElementById('mayoDesc');
+      desc.className = 'mayo-description';
+      desc.style.background = '#f8fafc';
+      desc.innerHTML = 'Enter patient age to determine Mayo class.';
+    }
+
+    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function clearForm() {
+    ['lL','lW','lD','rL','rW','rD','height','age'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('results').classList.remove('visible');
+    clearError();
+  }
+
+  // Allow Enter key to trigger calculation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') calculate();
+  });
+</script>
+</body>
+</html>
