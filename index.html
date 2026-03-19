@@ -304,24 +304,36 @@
       <ol class="steps">
         <li>
           <span>
-            <strong>Coronal plane:</strong> Measure the <em>length (cranio-caudal)</em> — the longest
-            pole-to-pole distance — and the <em>width (transverse)</em> — the widest lateral dimension
-            perpendicular to length — of each kidney.
+            <strong>Coronal plane</strong> — on the coronal slice showing the maximum kidney cross-section,
+            take <strong>2 measurements</strong>:
+            <ul style="margin-top:0.4rem;padding-left:1.2rem;">
+              <li><strong>Lc</strong> — cranio-caudal length: longest pole-to-pole distance (vertical)</li>
+              <li><strong>W</strong> — transverse width: widest lateral dimension perpendicular to Lc (horizontal)</li>
+            </ul>
           </span>
         </li>
         <li>
           <span>
-            <strong>Sagittal plane:</strong> On the parasagittal slice showing the maximum kidney cross-section,
-            measure the <em>width (antero-posterior / depth)</em> — the deepest dimension from anterior to
-            posterior border. <em>Note: the length is shared with the coronal plane — do not re-measure.</em>
+            <strong>Sagittal plane</strong> — on the parasagittal slice showing the maximum kidney cross-section,
+            take <strong>2 measurements</strong>:
+            <ul style="margin-top:0.4rem;padding-left:1.2rem;">
+              <li><strong>Ls</strong> — cranio-caudal length: pole-to-pole on the sagittal view (vertical)</li>
+              <li><strong>D</strong> — antero-posterior depth: widest AP dimension (horizontal)</li>
+            </ul>
           </span>
         </li>
         <li>
           <span>
-            The ellipsoid formula uses three axes: <strong>L</strong> (length, coronal),
-            <strong>W</strong> (transverse width, coronal), <strong>D</strong> (depth / AP width, sagittal).
-            <br/><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.8rem;">
-            Volume (mL) = π/6 × L × W × D</code>
+            <strong>Total: 4 measurements per kidney.</strong>
+            The ellipsoid formula averages the two length measurements:
+            <br/>
+            <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.8rem;display:inline-block;margin-top:0.3rem;">
+              L = (Lc + Ls) / 2
+            </code>
+            <br/>
+            <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.8rem;display:inline-block;margin-top:0.3rem;">
+              Volume (mL) = (π/6) × L × W × D
+            </code>
           </span>
         </li>
         <li>
@@ -337,22 +349,12 @@
 
         <!-- Coronal diagram -->
         <div class="diagram-item">
-          <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
-            <rect width="280" height="220" fill="#e8f4fd" rx="8"/>
-            <text x="140" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e40af">CORONAL VIEW</text>
-            <!-- Kidney silhouette -->
-            <ellipse cx="140" cy="115" rx="55" ry="85" fill="#bfdbfe" stroke="#2563eb" stroke-width="2.5"/>
-            <!-- Pelvis notch -->
-            <path d="M105 105 Q140 98 175 105" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,3"/>
-            <!-- Collecting system -->
-            <ellipse cx="140" cy="115" rx="22" ry="35" fill="none" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="3,2"/>
-
-            <!-- Length arrow (vertical) -->
+          <svg viewBox="0 0 280 230" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <marker id="arrowL" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <marker id="arrowLc" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
                 <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
               </marker>
-              <marker id="arrowLS" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
+              <marker id="arrowLcS" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
                 <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
               </marker>
               <marker id="arrowW" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
@@ -362,37 +364,38 @@
                 <path d="M0,0 L8,4 L0,8 Z" fill="#16a34a"/>
               </marker>
             </defs>
-            <line x1="210" y1="30" x2="210" y2="200" stroke="#dc2626" stroke-width="2"
-                  marker-start="url(#arrowLS)" marker-end="url(#arrowL)"/>
-            <text x="222" y="118" font-size="12" font-weight="bold" fill="#dc2626">L</text>
-            <text x="218" y="130" font-size="9" fill="#dc2626">(length)</text>
-
-            <!-- Width arrow (horizontal) -->
-            <line x1="85" y1="185" x2="195" y2="185" stroke="#16a34a" stroke-width="2"
+            <rect width="280" height="230" fill="#e8f4fd" rx="8"/>
+            <text x="140" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e40af">CORONAL VIEW</text>
+            <!-- Kidney silhouette -->
+            <ellipse cx="130" cy="115" rx="55" ry="85" fill="#bfdbfe" stroke="#2563eb" stroke-width="2.5"/>
+            <!-- Pelvis notch -->
+            <path d="M95 105 Q130 98 165 105" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <!-- Collecting system -->
+            <ellipse cx="130" cy="115" rx="22" ry="35" fill="none" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <!-- Lc arrow (vertical) -->
+            <line x1="200" y1="30" x2="200" y2="200" stroke="#dc2626" stroke-width="2"
+                  marker-start="url(#arrowLcS)" marker-end="url(#arrowLc)"/>
+            <text x="210" y="112" font-size="12" font-weight="bold" fill="#dc2626">Lc</text>
+            <text x="208" y="124" font-size="9" fill="#dc2626">(length)</text>
+            <!-- W arrow (horizontal) -->
+            <line x1="75" y1="192" x2="185" y2="192" stroke="#16a34a" stroke-width="2"
                   marker-start="url(#arrowWS)" marker-end="url(#arrowW)"/>
-            <text x="133" y="198" font-size="12" font-weight="bold" fill="#16a34a">W</text>
-            <text x="119" y="210" font-size="9" fill="#16a34a">(transverse)</text>
-
-            <!-- Labels -->
-            <text x="10" y="208" font-size="9" fill="#64748b">Coronal: L &amp; W measured</text>
+            <text x="122" y="207" font-size="12" font-weight="bold" fill="#16a34a">W</text>
+            <text x="105" y="219" font-size="9" fill="#16a34a">(transverse)</text>
           </svg>
-          <p>Coronal — measure <strong style="color:#dc2626">Length</strong> &amp; <strong style="color:#16a34a">Width</strong></p>
+          <p>Coronal — measure <strong style="color:#dc2626">Lc (length)</strong> &amp; <strong style="color:#16a34a">W (width)</strong></p>
         </div>
 
         <!-- Sagittal diagram -->
         <div class="diagram-item">
-          <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
-            <rect width="280" height="220" fill="#fdf4ff" rx="8"/>
-            <text x="140" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#7e22ce">SAGITTAL VIEW</text>
-            <!-- Kidney silhouette (bean shape) -->
-            <ellipse cx="130" cy="113" rx="48" ry="82" fill="#e9d5ff" stroke="#7c3aed" stroke-width="2.5"/>
-            <!-- AP notch (hilum) -->
-            <path d="M160 100 Q172 113 160 126" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
-            <!-- Collecting system -->
-            <ellipse cx="140" cy="113" rx="18" ry="32" fill="none" stroke="#c4b5fd" stroke-width="1.5" stroke-dasharray="3,2"/>
-
-            <!-- Depth arrow (horizontal, AP) -->
+          <svg viewBox="0 0 280 230" xmlns="http://www.w3.org/2000/svg">
             <defs>
+              <marker id="arrowLs" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
+              </marker>
+              <marker id="arrowLsS" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/>
+              </marker>
               <marker id="arrowD" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
                 <path d="M0,0 L8,4 L0,8 Z" fill="#b45309"/>
               </marker>
@@ -400,20 +403,26 @@
                 <path d="M0,0 L8,4 L0,8 Z" fill="#b45309"/>
               </marker>
             </defs>
-            <line x1="82" y1="185" x2="178" y2="185" stroke="#b45309" stroke-width="2"
+            <rect width="280" height="230" fill="#fdf4ff" rx="8"/>
+            <text x="140" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#7e22ce">SAGITTAL VIEW</text>
+            <!-- Kidney silhouette -->
+            <ellipse cx="130" cy="113" rx="48" ry="82" fill="#e9d5ff" stroke="#7c3aed" stroke-width="2.5"/>
+            <!-- Hilum notch -->
+            <path d="M160 100 Q172 113 160 126" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+            <!-- Collecting system -->
+            <ellipse cx="135" cy="113" rx="18" ry="32" fill="none" stroke="#c4b5fd" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <!-- Ls arrow (vertical) -->
+            <line x1="200" y1="31" x2="200" y2="195" stroke="#dc2626" stroke-width="2"
+                  marker-start="url(#arrowLsS)" marker-end="url(#arrowLs)"/>
+            <text x="210" y="109" font-size="12" font-weight="bold" fill="#dc2626">Ls</text>
+            <text x="208" y="121" font-size="9" fill="#dc2626">(length)</text>
+            <!-- D arrow (horizontal, AP) -->
+            <line x1="82" y1="192" x2="178" y2="192" stroke="#b45309" stroke-width="2"
                   marker-start="url(#arrowDS)" marker-end="url(#arrowD)"/>
-            <text x="122" y="198" font-size="12" font-weight="bold" fill="#b45309">D</text>
-            <text x="105" y="210" font-size="9" fill="#b45309">(depth / AP)</text>
-
-            <!-- Length reference arrow -->
-            <line x1="230" y1="31" x2="230" y2="195" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,3"
-                  marker-start="url(#arrowLS)" marker-end="url(#arrowL)"/>
-            <text x="240" y="118" font-size="11" font-weight="bold" fill="#dc2626" opacity="0.6">L</text>
-            <text x="238" y="129" font-size="8" fill="#dc2626" opacity="0.6">(ref)</text>
-
-            <text x="10" y="208" font-size="9" fill="#64748b">Sagittal: D measured (L shared)</text>
+            <text x="122" y="207" font-size="12" font-weight="bold" fill="#b45309">D</text>
+            <text x="105" y="219" font-size="9" fill="#b45309">(depth / AP)</text>
           </svg>
-          <p>Sagittal — measure <strong style="color:#b45309">Depth (AP)</strong>; Length is shared</p>
+          <p>Sagittal — measure <strong style="color:#dc2626">Ls (length)</strong> &amp; <strong style="color:#b45309">D (depth)</strong></p>
         </div>
 
       </div><!-- /diagram-wrap -->
@@ -528,6 +537,13 @@
               <div class="measure-panel-header">Sagittal</div>
               <div class="measure-panel-body">
                 <div class="field-group">
+                  <label>Length (Ls)</label>
+                  <div class="field-row">
+                    <input type="number" id="lLs" placeholder="e.g. 13.8" min="1" max="35" step="0.1"/>
+                    <span class="unit">cm</span>
+                  </div>
+                </div>
+                <div class="field-group">
                   <label>Depth / AP (D)</label>
                   <div class="field-row">
                     <input type="number" id="lD" placeholder="e.g. 8.5" min="1" max="25" step="0.1"/>
@@ -565,6 +581,13 @@
             <div class="measure-panel">
               <div class="measure-panel-header">Sagittal</div>
               <div class="measure-panel-body">
+                <div class="field-group">
+                  <label>Length (Ls)</label>
+                  <div class="field-row">
+                    <input type="number" id="rLs" placeholder="e.g. 13.4" min="1" max="35" step="0.1"/>
+                    <span class="unit">cm</span>
+                  </div>
+                </div>
                 <div class="field-group">
                   <label>Depth / AP (D)</label>
                   <div class="field-row">
@@ -626,10 +649,12 @@
 
       <div class="formula-note">
         <strong>Formula:</strong>
+        <code>L = (Lc + Ls) / 2</code> &nbsp;·&nbsp;
         <code>Vol (mL) = (π/6) × L × W × D</code> &nbsp;·&nbsp;
         <code>TKV = Left Vol + Right Vol</code> &nbsp;·&nbsp;
         <code>htTKV = TKV / height(m)</code><br/>
-        All input dimensions in <em>cm</em>; height in <em>cm</em> converted to metres for htTKV.
+        Lc = coronal length, Ls = sagittal length, W = transverse width (coronal), D = AP depth (sagittal).
+        All dimensions in <em>cm</em>; height converted to metres for htTKV.
       </div>
     </div>
   </div>
@@ -737,18 +762,20 @@
   function calculate() {
     clearError();
 
-    const lL = getVal('lL'), lW = getVal('lW'), lD = getVal('lD');
-    const rL = getVal('rL'), rW = getVal('rW'), rD = getVal('rD');
+    const lLc = getVal('lL'), lLs = getVal('lLs'), lW = getVal('lW'), lD = getVal('lD');
+    const rLc = getVal('rL'), rLs = getVal('rLs'), rW = getVal('rW'), rD = getVal('rD');
     const height = getVal('height');
     const age = getVal('age');
 
     const missing = [];
-    if (!lL) missing.push('Left Length');
-    if (!lW) missing.push('Left Width');
-    if (!lD) missing.push('Left Depth');
-    if (!rL) missing.push('Right Length');
-    if (!rW) missing.push('Right Width');
-    if (!rD) missing.push('Right Depth');
+    if (!lLc) missing.push('Left Coronal Length');
+    if (!lLs) missing.push('Left Sagittal Length');
+    if (!lW)  missing.push('Left Width');
+    if (!lD)  missing.push('Left Depth');
+    if (!rLc) missing.push('Right Coronal Length');
+    if (!rLs) missing.push('Right Sagittal Length');
+    if (!rW)  missing.push('Right Width');
+    if (!rD)  missing.push('Right Depth');
     if (!height) missing.push('Patient Height');
 
     if (missing.length) {
@@ -759,6 +786,8 @@
     if (height < 100 || height > 230) { showError('Height must be between 100 and 230 cm.'); return; }
     if (age !== null && (age < 15 || age > 100)) { showError('Age must be between 15 and 100.'); return; }
 
+    const lL = (lLc + lLs) / 2;
+    const rL = (rLc + rLs) / 2;
     const volL = ellipsoidVol(lL, lW, lD);
     const volR = ellipsoidVol(rL, rW, rD);
     const tkv  = volL + volR;
@@ -795,7 +824,7 @@
   }
 
   function clearForm() {
-    ['lL','lW','lD','rL','rW','rD','height','age'].forEach(id => {
+    ['lL','lLs','lW','lD','rL','rLs','rW','rD','height','age'].forEach(id => {
       document.getElementById(id).value = '';
     });
     document.getElementById('results').classList.remove('visible');
