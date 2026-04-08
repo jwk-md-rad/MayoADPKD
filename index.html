@@ -544,52 +544,39 @@
 
       <!-- Mayo classification table -->
       <div class="mayo-table-wrap" style="margin-top:1.5rem;">
-        <p style="font-size:0.8rem;font-weight:600;color:#334155;margin-bottom:0.5rem;">
-          Mayo Imaging Classification — htTKV thresholds by age group (mL/m)
+        <p style="font-size:0.8rem;font-weight:600;color:#334155;margin-bottom:0.3rem;">
+          Mayo Imaging Classification — htTKV boundaries by age (mL/m)
+        </p>
+        <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.5rem;">
+          Formula: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;">boundary = 150 × (1 + r/100)<sup>age</sup></code>
+          &nbsp;·&nbsp; r = 1.5 / 3.0 / 4.5 / 6.0 %/yr &nbsp;·&nbsp; K = 150 mL/m, A = 0
         </p>
         <table>
           <thead>
             <tr>
-              <th>Class</th>
-              <th>Age 15–24</th>
-              <th>Age 25–34</th>
-              <th>Age 35–44</th>
-              <th>Age 45–54</th>
-              <th>Age 55–64</th>
-              <th>Annual Growth</th>
+              <th>Age</th>
+              <th><span style="color:#86efac">1A</span> (r &lt; 1.5%)</th>
+              <th><span style="color:#6ee7b7">1B</span> (1.5–3%)</th>
+              <th><span style="color:#fde68a">1C</span> (3–4.5%)</th>
+              <th><span style="color:#fdba74">1D</span> (4.5–6%)</th>
+              <th><span style="color:#fca5a5">1E</span> (&gt; 6%)</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td><span class="class-badge" style="background:#dcfce7;color:#14532d">1A</span></td>
-              <td>&lt; 160</td><td>&lt; 160</td><td>&lt; 160</td><td>&lt; 160</td><td>&lt; 160</td>
-              <td>~1.5%</td>
-            </tr>
-            <tr>
-              <td><span class="class-badge" style="background:#bbf7d0;color:#14532d">1B</span></td>
-              <td>160–319</td><td>160–319</td><td>160–319</td><td>160–319</td><td>160–319</td>
-              <td>~3.0%</td>
-            </tr>
-            <tr>
-              <td><span class="class-badge" style="background:#fef9c3;color:#713f12">1C</span></td>
-              <td>320–599</td><td>320–599</td><td>320–499</td><td>320–499</td><td>320–499</td>
-              <td>~4.8%</td>
-            </tr>
-            <tr>
-              <td><span class="class-badge" style="background:#fed7aa;color:#7c2d12">1D</span></td>
-              <td>600–999</td><td>600–899</td><td>500–799</td><td>500–699</td><td>500–599</td>
-              <td>~6.3%</td>
-            </tr>
-            <tr>
-              <td><span class="class-badge" style="background:#fecaca;color:#7f1d1d">1E</span></td>
-              <td>≥ 1000</td><td>≥ 900</td><td>≥ 800</td><td>≥ 700</td><td>≥ 600</td>
-              <td>~9.0%</td>
-            </tr>
+            <tr><td>20</td><td>&lt; 202</td><td>202–270</td><td>271–361</td><td>362–481</td><td>≥ 481</td></tr>
+            <tr><td>25</td><td>&lt; 218</td><td>218–313</td><td>314–450</td><td>451–643</td><td>≥ 643</td></tr>
+            <tr><td>30</td><td>&lt; 235</td><td>235–363</td><td>364–561</td><td>562–861</td><td>≥ 862</td></tr>
+            <tr><td>35</td><td>&lt; 253</td><td>253–421</td><td>422–699</td><td>700–1152</td><td>≥ 1153</td></tr>
+            <tr><td>40</td><td>&lt; 272</td><td>272–489</td><td>490–872</td><td>873–1543</td><td>≥ 1543</td></tr>
+            <tr><td>45</td><td>&lt; 293</td><td>293–567</td><td>568–1087</td><td>1088–2055</td><td>≥ 2055</td></tr>
+            <tr><td>50</td><td>&lt; 316</td><td>316–657</td><td>658–1354</td><td>1355–2750</td><td>≥ 2750</td></tr>
+            <tr><td>55</td><td>&lt; 340</td><td>340–762</td><td>763–1688</td><td>1689–3678</td><td>≥ 3678</td></tr>
           </tbody>
         </table>
         <p style="font-size:0.75rem;color:#94a3b8;margin-top:0.4rem;">
-          * Class 2 (non-typical): irregular/asymmetric growth pattern not fitting Class 1 criteria.
-          Annual growth rates are approximate median values from Irazabal et al. JASN 2015.
+          Thresholds are continuous per-year values; table shows representative ages.
+          Class 2 (atypical/asymmetric morphology) is not classified as 1A–1E.
+          Irazabal et al. JASN 2015;26(1):160–172. PMID 24904092.
         </p>
       </div>
 
@@ -803,69 +790,55 @@
   }
 
   // ── Mayo Classification ──────────────────────────────────────────────────
-  // Thresholds from Irazabal 2015 (htTKV mL/m by age group)
-  // Returns class string '1A'..'1E' or '2' (atypical)
-  const MAYO_THRESHOLDS = {
-    // [1A_max, 1B_max, 1C_max, 1D_max]  ≥1E otherwise
-    '15-24': [159, 319, 599, 999],
-    '25-34': [159, 319, 599, 899],
-    '35-44': [159, 319, 499, 799],
-    '45-54': [159, 319, 499, 699],
-    '55-64': [159, 319, 499, 599],
-    '65+':   [159, 319, 499, 599],
-  };
+  // Formula from Irazabal et al. JASN 2015 (confirmed in multiple sources):
+  //   boundary(r, age) = 150 × (1 + r/100)^age
+  // where r = growth rate (%/yr), age = patient age in years, K=150, A=0.
+  // Source: https://www.mayo.edu/research/documents/pkd-center-adpkd-classification/doc-20094754
+
+  function mayoBoundary(rate, age) {
+    return 150 * Math.pow(1 + rate / 100, age);
+  }
+
+  function getMayoClass(htTKV, age) {
+    if (htTKV < mayoBoundary(1.5, age)) return '1A';
+    if (htTKV < mayoBoundary(3.0, age)) return '1B';
+    if (htTKV < mayoBoundary(4.5, age)) return '1C';
+    if (htTKV < mayoBoundary(6.0, age)) return '1D';
+    return '1E';
+  }
 
   const MAYO_INFO = {
     '1A': {
       label: 'Class 1A — Very slow progression',
       css: 'mayo-1A',
-      growth: '~1.5% / year',
+      growth: '< 1.5% / year',
       desc: 'Very slow kidney growth. Low near-term risk of CKD progression. Standard monitoring recommended.',
     },
     '1B': {
       label: 'Class 1B — Slow progression',
       css: 'mayo-1B',
-      growth: '~3.0% / year',
+      growth: '1.5–3.0% / year',
       desc: 'Slow kidney growth. Moderate risk of CKD progression. Annual monitoring recommended.',
     },
     '1C': {
       label: 'Class 1C — Intermediate progression',
       css: 'mayo-1C',
-      growth: '~4.8% / year',
+      growth: '3.0–4.5% / year',
       desc: 'Intermediate growth rate. Eligible for disease-modifying therapy per current guidelines.',
     },
     '1D': {
       label: 'Class 1D — Rapid progression',
       css: 'mayo-1D',
-      growth: '~6.3% / year',
+      growth: '4.5–6.0% / year',
       desc: 'Rapid kidney growth. Strong indication for disease-modifying therapy.',
     },
     '1E': {
       label: 'Class 1E — Very rapid progression',
       css: 'mayo-1E',
-      growth: '~9.0% / year',
+      growth: '> 6.0% / year',
       desc: 'Very rapid growth. Highest risk of CKD progression. Disease-modifying therapy strongly indicated.',
     },
   };
-
-  function getAgeGroup(age) {
-    if (age < 25) return '15-24';
-    if (age < 35) return '25-34';
-    if (age < 45) return '35-44';
-    if (age < 55) return '45-54';
-    if (age < 65) return '55-64';
-    return '65+';
-  }
-
-  function getMayoClass(htTKV, age) {
-    const group = getAgeGroup(age);
-    const t = MAYO_THRESHOLDS[group];
-    if (htTKV <= t[0]) return '1A';
-    if (htTKV <= t[1]) return '1B';
-    if (htTKV <= t[2]) return '1C';
-    if (htTKV <= t[3]) return '1D';
-    return '1E';
-  }
 
   // ── Calculation ──────────────────────────────────────────────────────────
   function ellipsoidVol(L, W, D) {
