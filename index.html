@@ -576,19 +576,10 @@
               <th><span style="color:#fca5a5">1E</span> (&gt; 6%)</th>
             </tr>
           </thead>
-          <tbody>
-            <tr><td>20</td><td>&lt; 202</td><td>202–270</td><td>271–361</td><td>362–481</td><td>≥ 481</td></tr>
-            <tr><td>25</td><td>&lt; 218</td><td>218–313</td><td>314–450</td><td>451–643</td><td>≥ 643</td></tr>
-            <tr><td>30</td><td>&lt; 235</td><td>235–363</td><td>364–561</td><td>562–861</td><td>≥ 862</td></tr>
-            <tr><td>35</td><td>&lt; 253</td><td>253–421</td><td>422–699</td><td>700–1152</td><td>≥ 1153</td></tr>
-            <tr><td>40</td><td>&lt; 272</td><td>272–489</td><td>490–872</td><td>873–1543</td><td>≥ 1543</td></tr>
-            <tr><td>45</td><td>&lt; 293</td><td>293–567</td><td>568–1087</td><td>1088–2055</td><td>≥ 2055</td></tr>
-            <tr><td>50</td><td>&lt; 316</td><td>316–657</td><td>658–1354</td><td>1355–2750</td><td>≥ 2750</td></tr>
-            <tr><td>55</td><td>&lt; 340</td><td>340–762</td><td>763–1688</td><td>1689–3678</td><td>≥ 3678</td></tr>
-          </tbody>
+          <tbody id="mayoTableBody"></tbody>
         </table>
         <p style="font-size:0.75rem;color:#94a3b8;margin-top:0.4rem;">
-          Thresholds are continuous per-year values; table shows representative ages.
+          Thresholds are continuous per-year values; table shows representative ages, rounded to whole mL/m.
           Class 2 (atypical/asymmetric morphology) is not classified as 1A–1E.
           Irazabal et al. JASN 2015;26(1):160–172. PMID 24904092.
         </p>
@@ -808,7 +799,8 @@
   // 1.0.0  Calculator, Mayo classification
   // 1.1.0  Copy-paste report text
   // 1.2.0  Version number in header
-  const APP_VERSION = '1.2.0';
+  // 1.2.1  Boundary table generated from the formula (fixes wrong values at age 45–55)
+  const APP_VERSION = '1.2.1';
   const APP_DATE = '2026-10-25';
   document.getElementById('appVersion').textContent = `Version ${APP_VERSION} · ${APP_DATE}`;
 
@@ -837,6 +829,18 @@
     if (htTKV < mayoBoundary(6.0, age)) return '1D';
     return '1E';
   }
+
+  // Boundary table, generated from the same formula as the classification.
+  // Values rounded to whole mL/m.
+  (function fillMayoTable() {
+    const rows = [];
+    for (let age = 15; age <= 80; age += 5) {
+      const [b1, b2, b3, b4] = [1.5, 3.0, 4.5, 6.0].map(r => Math.round(mayoBoundary(r, age)));
+      rows.push(`<tr><td>${age}</td><td>&lt; ${b1}</td><td>${b1}–${b2}</td>` +
+        `<td>${b2}–${b3}</td><td>${b3}–${b4}</td><td>≥ ${b4}</td></tr>`);
+    }
+    document.getElementById('mayoTableBody').innerHTML = rows.join('');
+  })();
 
   const MAYO_INFO = {
     '1A': {
