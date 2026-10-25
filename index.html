@@ -921,7 +921,8 @@
 
     document.getElementById('reportText').value = buildReport(
       { Ls: lLs, Lc: lLc, W: lW, D: lD, vol: volL },
-      { Ls: rLs, Lc: rLc, W: rW, D: rD, vol: volR });
+      { Ls: rLs, Lc: rLc, W: rW, D: rD, vol: volR },
+      { htTKV, height, age, cls: age !== null ? getMayoClass(htTKV, age) : null });
 
     const resultsEl = document.getElementById('results');
     resultsEl.classList.add('visible');
@@ -962,11 +963,15 @@
       `Berekend volume ${round10(k.vol)} cc.`;
   }
 
-  function buildReport(left, right) {
+  function buildReport(left, right, pt) {
     // Total is the sum of the rounded volumes so the report adds up.
     const total = round10(right.vol) + round10(left.vol);
-    return kidneyReport('Rechternier', right) + '\n\n' +
-      kidneyReport('Linkernier', left) + '  Totaal niervolume ' + total + ' cc.';
+    // htTKV uses the unrounded TKV, matching the result boxes and the class.
+    let text = kidneyReport('Rechternier', right) + '\n\n' +
+      kidneyReport('Linkernier', left) + '  Totaal niervolume ' + total + ' cc.\n\n' +
+      `htTKV ${pt.htTKV.toFixed(0)} mL/m (lengte ${String(pt.height).replace('.', ',')} cm).`;
+    if (pt.cls) text += ` Mayo klasse ${pt.cls} (leeftijd ${pt.age} jaar).`;
+    return text;
   }
 
   function copyReport() {
