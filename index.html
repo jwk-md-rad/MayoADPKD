@@ -274,6 +274,18 @@
       margin-top: 1rem; display: none;
     }
     .error-msg.visible { display: block; }
+
+    /* ── Report text ── */
+    .report-block { margin-top: 1rem; }
+    .report-block label {
+      display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;
+    }
+    .report-block textarea {
+      width: 100%; min-height: 20rem; padding: 0.75rem;
+      border: 1.5px solid #cbd5e1; border-radius: 8px;
+      font-family: inherit; font-size: 0.875rem; line-height: 1.5; resize: vertical;
+    }
+    .report-block .actions { margin-top: 0.5rem; }
   </style>
 </head>
 <body>
@@ -759,6 +771,14 @@
 
       <div class="mayo-description" id="mayoDesc"></div>
 
+      <div class="report-block">
+        <label for="reportText">Report text (copy &amp; paste)</label>
+        <textarea id="reportText" spellcheck="false"></textarea>
+        <div class="actions">
+          <button class="btn btn-secondary" id="copyBtn" onclick="copyReport()">Copy to clipboard</button>
+        </div>
+      </div>
+
       <div class="formula-note">
         <strong>Formula:</strong>
         <code>L = (Lc + Ls) / 2</code> &nbsp;·&nbsp;
@@ -899,6 +919,11 @@
     document.getElementById('resTKV').textContent   = tkv.toFixed(0);
     document.getElementById('resHtTKV').textContent = htTKV.toFixed(1);
 
+    document.getElementById('reportText').value = buildReport(
+      { Ls: lLs, Lc: lLc, W: lW, D: lD, vol: volL },
+      { Ls: rLs, Lc: rLc, W: rW, D: rD, vol: volR },
+      { htTKV, height, age, cls: age !== null ? getMayoClass(htTKV, age) : null });
+
     const resultsEl = document.getElementById('results');
     resultsEl.classList.add('visible');
 
@@ -923,17 +948,68 @@
     resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
+  // ── Report text (Dutch) ──────────────────────────────────────────────────
+  // Dimensions with one decimal and a decimal comma; volumes rounded to 10 cc.
+  function fmtCm(v) {
+    return v.toFixed(1).replace('.', ',');
+  }
+  function round10(v) {
+    return Math.round(v / 10) * 10;
+  }
+
+  function kidneyReport(name, k) {
+    return `${name}:\n` +
+      `Sagittale lengte ${fmtCm(k.Ls)} cm.\n` +
+      `Coronale lengte ${fmtCm(k.Lc)} cm.\n` +
+      `Axiaal ${fmtCm(k.W)} x ${fmtCm(k.D)} cm.\n` +
+      `Berekend volume ${round10(k.vol)} cc.`;
+  }
+
+  function buildReport(left, right, pt) {
+    // Total is the sum of the rounded volumes so the report adds up.
+    const total = round10(right.vol) + round10(left.vol);
+    // htTKV uses the unrounded TKV, matching the result boxes and the class.
+    const lines = [
+      kidneyReport('Rechternier', right),
+      '',
+      kidneyReport('Linkernier', left),
+      '',
+      `Totaal niervolume ${total} cc.`,
+      `htTKV ${pt.htTKV.toFixed(0)} mL/m (lengte ${String(pt.height).replace('.', ',')} cm).`,
+    ];
+    if (pt.cls) lines.push(`Mayo klasse ${pt.cls} (leeftijd ${pt.age} jaar).`);
+    lines.push('', 'Geen relevante extrarenale bevindingen.');
+    return lines.join('\n');
+  }
+
+  function copyReport() {
+    const ta = document.getElementById('reportText');
+    const btn = document.getElementById('copyBtn');
+    const done = () => {
+      btn.textContent = 'Copied ✓';
+      setTimeout(() => { btn.textContent = 'Copy to clipboard'; }, 1500);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(ta.value).then(done, () => { ta.select(); document.execCommand('copy'); done(); });
+    } else {
+      ta.select();
+      document.execCommand('copy');
+      done();
+    }
+  }
+
   function clearForm() {
     ['lL','lLs','lW','lD','rL','rLs','rW','rD','height','age'].forEach(id => {
       document.getElementById(id).value = '';
     });
+    document.getElementById('reportText').value = '';
     document.getElementById('results').classList.remove('visible');
     clearError();
   }
 
   // Allow Enter key to trigger calculation
   document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') calculate();
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') calculate();
   });
 </script>
 </body>
