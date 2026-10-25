@@ -22,6 +22,7 @@
     }
     header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.3px; }
     header p { font-size: 0.9rem; opacity: 0.85; margin-top: 0.3rem; }
+    header .version { font-size: 0.75rem; opacity: 0.7; margin-top: 0.4rem; }
 
     main {
       max-width: 1000px;
@@ -293,6 +294,7 @@
 <header>
   <h1>ADPKD Mayo Imaging Classification Calculator</h1>
   <p>Total Kidney Volume (TKV) · Height-adjusted TKV (htTKV) · Mayo Class</p>
+  <p class="version" id="appVersion"></p>
 </header>
 
 <main>
@@ -801,6 +803,15 @@
 </main>
 
 <script>
+  // ── Version ──────────────────────────────────────────────────────────────
+  // Bump on every change so users can check they have the latest version.
+  // 1.0.0  Calculator, Mayo classification
+  // 1.1.0  Copy-paste report text
+  // 1.2.0  Version number in header
+  const APP_VERSION = '1.2.0';
+  const APP_DATE = '2026-10-25';
+  document.getElementById('appVersion').textContent = `Version ${APP_VERSION} · ${APP_DATE}`;
+
   // ── Toggles ──────────────────────────────────────────────────────────────
   function toggleInstructions() {
     const el = document.getElementById('instructionsContent');
