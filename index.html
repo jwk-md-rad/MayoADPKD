@@ -281,7 +281,7 @@
       display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem;
     }
     .report-block textarea {
-      width: 100%; min-height: 9.5rem; padding: 0.75rem;
+      width: 100%; min-height: 20rem; padding: 0.75rem;
       border: 1.5px solid #cbd5e1; border-radius: 8px;
       font-family: inherit; font-size: 0.875rem; line-height: 1.5; resize: vertical;
     }
@@ -959,7 +959,9 @@
 
   function kidneyReport(name, k) {
     return `${name}:\n` +
-      `Sagittaal ${fmtCm(k.Ls)} cm coronaal ${fmtCm(k.Lc)} cm. Axiaal ${fmtCm(k.W)} x ${fmtCm(k.D)} cm.\n` +
+      `Sagittale lengte ${fmtCm(k.Ls)} cm.\n` +
+      `Coronale lengte ${fmtCm(k.Lc)} cm.\n` +
+      `Axiaal ${fmtCm(k.W)} x ${fmtCm(k.D)} cm.\n` +
       `Berekend volume ${round10(k.vol)} cc.`;
   }
 
@@ -967,11 +969,17 @@
     // Total is the sum of the rounded volumes so the report adds up.
     const total = round10(right.vol) + round10(left.vol);
     // htTKV uses the unrounded TKV, matching the result boxes and the class.
-    let text = kidneyReport('Rechternier', right) + '\n\n' +
-      kidneyReport('Linkernier', left) + '  Totaal niervolume ' + total + ' cc.\n\n' +
-      `htTKV ${pt.htTKV.toFixed(0)} mL/m (lengte ${String(pt.height).replace('.', ',')} cm).`;
-    if (pt.cls) text += ` Mayo klasse ${pt.cls} (leeftijd ${pt.age} jaar).`;
-    return text;
+    const lines = [
+      kidneyReport('Rechternier', right),
+      '',
+      kidneyReport('Linkernier', left),
+      '',
+      `Totaal niervolume ${total} cc.`,
+      `htTKV ${pt.htTKV.toFixed(0)} mL/m (lengte ${String(pt.height).replace('.', ',')} cm).`,
+    ];
+    if (pt.cls) lines.push(`Mayo klasse ${pt.cls} (leeftijd ${pt.age} jaar).`);
+    lines.push('', 'Geen relevante extrarenale bevindingen.');
+    return lines.join('\n');
   }
 
   function copyReport() {
