@@ -231,6 +231,16 @@
     }
     .mayo-description strong { font-weight: 700; }
 
+    .mayo-warning {
+      display: none;
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: #fffbeb; border: 1px solid #fcd34d; color: #78350f;
+      font-size: 0.85rem; line-height: 1.5;
+    }
+    .mayo-warning.visible { display: block; }
+
     /* Mayo class colours */
     .mayo-1A { background: #f0fdf4; border-left: 4px solid #22c55e; color: #14532d; }
     .mayo-1B { background: #f0fdf4; border-left: 4px solid #16a34a; color: #14532d; }
@@ -763,6 +773,7 @@
       </div>
 
       <div class="mayo-description" id="mayoDesc"></div>
+      <div class="mayo-warning" id="mayoWarning"></div>
 
       <div class="report-block">
         <label for="reportText">Report text (copy &amp; paste)</label>
@@ -800,7 +811,8 @@
   // 1.1.0  Copy-paste report text
   // 1.2.0  Version number in header
   // 1.2.1  Boundary table generated from the formula (fixes wrong values at age 45–55)
-  const APP_VERSION = '1.2.1';
+  // 1.3.0  No Mayo class outside age 15–80; warning near class boundary
+  const APP_VERSION = '1.3.0';
   const APP_DATE = '2026-10-25';
   document.getElementById('appVersion').textContent = `Version ${APP_VERSION} · ${APP_DATE}`;
 
@@ -820,6 +832,31 @@
 
   function mayoBoundary(rate, age) {
     return 150 * Math.pow(1 + rate / 100, age);
+  }
+
+  // Age range of the cohort the classification was derived from (Irazabal 2015).
+  const MAYO_MIN_AGE = 15;
+  const MAYO_MAX_AGE = 80;
+
+  // Mean underestimation of htTKV by the ellipsoid method vs. manual
+  // segmentation is ~13% (Abdrabou 2026, doi:10.1177/20543581261479801).
+  // Warn when the next class boundary is within this margin.
+  const ELLIPSOID_MARGIN = 0.15;
+
+  function mayoClassApplies(age) {
+    return age !== null && age >= MAYO_MIN_AGE && age <= MAYO_MAX_AGE;
+  }
+
+  // Next higher class boundary when htTKV lies within the margin below it.
+  function nearUpperBoundary(htTKV, age, cls) {
+    const rate = { '1A': 1.5, '1B': 3.0, '1C': 4.5, '1D': 6.0 }[cls];
+    if (rate === undefined) return null;
+    const bound = mayoBoundary(rate, age);
+    return htTKV * (1 + ELLIPSOID_MARGIN) >= bound ? bound : null;
+  }
+
+  function nextClass(cls) {
+    return { '1A': '1B', '1B': '1C', '1C': '1D', '1D': '1E' }[cls];
   }
 
   function getMayoClass(htTKV, age) {
@@ -937,12 +974,16 @@
     document.getElementById('reportText').value = buildReport(
       { Ls: lLs, Lc: lLc, W: lW, D: lD, vol: volL },
       { Ls: rLs, Lc: rLc, W: rW, D: rD, vol: volR },
-      { htTKV, height, age, cls: age !== null ? getMayoClass(htTKV, age) : null });
+      { htTKV, height, age, cls: mayoClassApplies(age) ? getMayoClass(htTKV, age) : null });
 
     const resultsEl = document.getElementById('results');
     resultsEl.classList.add('visible');
 
-    if (age !== null) {
+    const warning = document.getElementById('mayoWarning');
+    warning.classList.remove('visible');
+    document.getElementById('mayoDesc').style.background = '';
+
+    if (mayoClassApplies(age)) {
       const cls = getMayoClass(htTKV, age);
       const info = MAYO_INFO[cls];
       document.getElementById('resMayo').textContent   = cls;
@@ -951,6 +992,24 @@
       const desc = document.getElementById('mayoDesc');
       desc.className = 'mayo-description ' + info.css;
       desc.innerHTML = `<strong>${info.label}</strong><br/>${info.desc}`;
+
+      const bound = nearUpperBoundary(htTKV, age, cls);
+      if (bound !== null) {
+        const pct = ((bound / htTKV - 1) * 100).toFixed(0);
+        warning.innerHTML = `<strong>⚠ Near class boundary:</strong> htTKV ${htTKV.toFixed(0)} mL/m is ` +
+          `${pct}% below the ${cls}/${nextClass(cls)} boundary (${bound.toFixed(0)} mL/m at age ${age}). ` +
+          `The ellipsoid method underestimates TKV by ~13% on average compared with manual segmentation, ` +
+          `so the true class may be ${nextClass(cls)}. Consider volumetry (segmentation) if this affects treatment.`;
+        warning.classList.add('visible');
+      }
+    } else if (age !== null) {
+      document.getElementById('resMayo').textContent    = 'N/A';
+      document.getElementById('resMayoSub').textContent = `Age outside ${MAYO_MIN_AGE}–${MAYO_MAX_AGE}`;
+      const desc = document.getElementById('mayoDesc');
+      desc.className = 'mayo-description';
+      desc.style.background = '#f8fafc';
+      desc.innerHTML = `Mayo class not determined: the classification was derived in patients aged ` +
+        `${MAYO_MIN_AGE}–${MAYO_MAX_AGE} years; age ${age} is outside this range.`;
     } else {
       document.getElementById('resMayo').textContent    = 'N/A';
       document.getElementById('resMayoSub').textContent = 'Enter age for class';
@@ -992,7 +1051,12 @@
       `Totaal niervolume ${total} cc.`,
       `htTKV ${pt.htTKV.toFixed(0)} mL/m (lengte ${String(pt.height).replace('.', ',')} cm).`,
     ];
-    if (pt.cls) lines.push(`Mayo klasse ${pt.cls} (leeftijd ${pt.age} jaar).`);
+    if (pt.cls) {
+      lines.push(`Mayo klasse ${pt.cls} (leeftijd ${pt.age} jaar).`);
+    } else if (pt.age !== null) {
+      lines.push(`Mayo klasse niet bepaald (leeftijd ${pt.age} jaar; classificatie gevalideerd voor ` +
+        `${MAYO_MIN_AGE}–${MAYO_MAX_AGE} jaar).`);
+    }
     lines.push('', 'Geen relevante extrarenale bevindingen.');
     return lines.join('\n');
   }
